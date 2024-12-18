@@ -54,6 +54,13 @@ export interface BubbleMenuPluginProps {
         to: number
       }) => boolean)
     | null
+
+  /**
+   * Whether the menu should be hidden when the editor loses focus.
+   * @type {boolean}
+   * @default true
+   */
+  hideOnBlur?: boolean
 }
 
 export type BubbleMenuViewProps = BubbleMenuPluginProps & {
@@ -105,6 +112,8 @@ export class BubbleMenuView {
     return true
   }
 
+  public hideOnBlur: boolean
+
   constructor({
     editor,
     element,
@@ -112,11 +121,13 @@ export class BubbleMenuView {
     tippyOptions = {},
     updateDelay = 250,
     shouldShow,
+    hideOnBlur = true,
   }: BubbleMenuViewProps) {
     this.editor = editor
     this.element = element
     this.view = view
     this.updateDelay = updateDelay
+    this.hideOnBlur = hideOnBlur
 
     if (shouldShow) {
       this.shouldShow = shouldShow
@@ -146,6 +157,10 @@ export class BubbleMenuView {
   }
 
   blurHandler = ({ event }: { event: FocusEvent }) => {
+    if (!this.hideOnBlur) {
+      return
+    }
+
     if (this.preventHide) {
       this.preventHide = false
 
